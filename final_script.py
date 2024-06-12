@@ -1,21 +1,43 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-interfacial_energy = 475*10**-3
-equilibreum_concentration = 0.011
-R = 8.314
-t = np.linspace(0,30*60,60*60)
+# Constants
+R = 8.314  # Gas constant in J/(mol*K)
+t = np.linspace(0, 30*60, 60*60)  # Time array from 0 to 30 minutes with 1-second intervals
 
-#interfacial_energy = [51*10^-3, 123*10^-3, 314*10^-3]
+# Initial conditions
+interfacial_energy = [475e-3, 450e-3, 350e-3]  # in J/m^2
+equilibreum_concentration = [0.011, 0.003, 0.0005]  # in mol/m^3
+diffusion_coefficient = [2.6e-16, 4.0e-18, 2.0e-21]  # in m^2/s
+T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
+molar_volume = [(7.09e-6) * 3 * 16.35 * (T[i] - 25) for i in range(len(T))]
 
-diffusion_coefficient = 2.6*10**-16
-T = 780+273.15
-molar_volume = (7.09 * 10**-6) * 3 * 16.35 * (T-25)
-r1 = np.cbrt((8*interfacial_energy*(molar_volume**2)*(equilibreum_concentration)*(diffusion_coefficient)*(t))/(9*R*T))
+# Function to calculate r values
+def calculate_r(interfacial_energy, molar_volume, equilibreum_concentration, diffusion_coefficient, T, previous_r=0):
+    return np.cbrt(
+        (8 * interfacial_energy * (molar_volume**2) * equilibreum_concentration * diffusion_coefficient * t) / 
+        (9 * R * T) + (previous_r**3)
+    )
 
+# Calculating r values for each set of initial conditions
+r_values = []
+previous_r = 0
+for i in range(len(T)):
+    r = calculate_r(
+        interfacial_energy[i],
+        molar_volume[i],
+        equilibreum_concentration[i],
+        diffusion_coefficient[i],
+        T[i],
+        previous_r
+    )
+    r_values.append(r)
+    previous_r = r[-1]  # Update previous_r to the last value of the current r
 
-# Plotting the graph
-plt.plot(t, r1, label='Sample A Radius')
+# Plotting the results
+for i, r in enumerate(r_values):
+    plt.plot(t, r, label=f'Sample {chr(65+i)} Radius')
+
 plt.xlabel('Time (seconds)')
 plt.ylabel('r value')
 plt.title('Plot of r vs t')
@@ -23,40 +45,9 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-interfacial_energy = 450*10**-3
-equilibreum_concentration = 0.003
-diffusion_coefficient = 4.0*10**-18
-T = 660+273.15
-molar_volume = (7.09 * 10**-6) * 3 * 16.35 * (T-25)
-r2 = np.cbrt((8*interfacial_energy*(molar_volume**2)*(equilibreum_concentration)*(diffusion_coefficient)*(t))/(9*R*T) + ((r1[-1])**3))
-
-
-# Plotting the graph
-plt.plot(t, r2, label='Sample B Radius')
-plt.xlabel('Time (seconds)')
-plt.ylabel('r value')
-plt.title('Plot of r vs t')
-plt.legend()
-plt.grid(True)
-plt.show()
-
-
-interfacial_energy = 350*10**-3
-equilibreum_concentration = 0.0005
-diffusion_coefficient = 2.0*10**-21
-T = 500+273.15
-molar_volume = (7.09 * 10**-6) * 3 * 16.35 * (T-25)
-r3 = np.cbrt((8*interfacial_energy*(molar_volume**2)*(equilibreum_concentration)*(diffusion_coefficient)*(t))/(9*R*T) + ((r2[-1])**3))
-print(r3[-1])
-
-# Plotting the graph
-plt.plot(t, r3, label='Sample V Radius')
-plt.xlabel('Time (seconds)')
-plt.ylabel('r value')
-plt.title('Plot of r vs t')
-plt.legend()
-plt.grid(True)
-plt.show()
+r1 = r_values[0]
+r2 = r_values[1]
+r3 = r_values[2]
 
 G = 81600*10**6
 b = 0.255*10**-9
@@ -69,4 +60,4 @@ print(strength_B)
 
 strength_C = ((0.538*G*b*(np.sqrt(f)))/(2*r3[-1]))*(np.log((r3[-1])/(2*b)))
 print(strength_C)
-                                                    
+                     
