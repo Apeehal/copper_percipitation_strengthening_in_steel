@@ -1,3 +1,5 @@
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
@@ -5,7 +7,7 @@ from scipy.integrate import solve_ivp
 
 # Constants
 R = 8.314  # Gas constant in J/(mol*K)
-t = np.linspace(0, 30*60, 100000)  # Time array from 0 to 30 minutes with 1-second intervals
+#t = np.linspace(0, 30*60, 100000)  # Time array from 0 to 30 minutes with 1-second intervals
 
 # Initial conditions
 interfacial_energy = [475e-3, 450e-3, 350e-3]  # in J/m^2
@@ -21,17 +23,49 @@ cu_density = 8850
 a = 100*10**-9
 
 r_values = []
-previous_r = 0
+#previous_r = 0
+
+
+def calculate_r(t,y,A,B,C,D,y_prev):
+    return ((1/3)*(((A*t + (B*(y_prev)))/(C+D*t))**(-2/3))) *  ((((C+D*t)*(A))-((A*t+(B *(y_prev)) )*(D)))/((C+D*t)**2))
 
 A = (a**3)*(8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_wt)*(fe_density)
-B = (a**3)*(previous_r**3)*(molar_mass_cu)
+B = (a**3)*(molar_mass_cu)
 C = (a**3)*(molar_mass_cu)
 D = (8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_density)*(4/3)*(np.pi)
 
-def calculate_r(t,A,B,C,D):
-    return ((1/3)*(((A*t + B)/(C+D*t))**(-2/3)))*  ((((C+D*t)*(A))-((A*t+B)*(D)))/((C+D*t)**2))
-                                                
 
+y0 = [0.000000000000000000000000000000000000001]
+t_span = (0,30*60)
+t_eval = np.linspace(0,30*60,10000)
+y_prev = y0[0]
+
+
+def solve_with_previous_term(calculate_r, t_span, y0, t_eval, A, B, C, D):
+    y_values = [y0[0]]  # Start with the initial condition
+    for i in range(1, len(t_eval)):
+        # Solve the ODE for the next time step
+        sol = solve_ivp(lambda t, y: calculate_r(t, y, A, B, C, D, y_values[-1]), [t_eval[i-1], t_eval[i]], [y_values[-1]])
+        # Append the new value
+        y_values.append(sol.y[0, -1])
+    return t_eval, np.array(y_values)
+
+
+t, y = solve_with_previous_term(calculate_r, t_span, y0, t_eval, A, B, C, D)
+
+
+# Plot the solution
+plt.plot(t, y, label='y(t)')
+plt.xlabel('t')
+plt.ylabel('y')
+plt.title('Solution of the ODE with y_prev term')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+
+"""""
 # Calculating r values for each set of initial conditions
 r_values = []
 previous_r = 0
@@ -58,7 +92,7 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-"""
+
 
 r1 = r_values[0]
 r2 = r_values[1]
