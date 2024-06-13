@@ -1,8 +1,6 @@
-
-
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.integrate import solve_ivp
+from scipy.integrate import ddeint
 
 
 # Constants
@@ -26,42 +24,53 @@ r_values = []
 #previous_r = 0
 
 
-def calculate_r(t,y,A,B,C,D,y_prev):
-    return ((1/3)*(((A*t + (B*(y_prev)))/(C+D*t))**(-2/3))) *  ((((C+D*t)*(A))-((A*t+(B *(y_prev)) )*(D)))/((C+D*t)**2))
-
 A = (a**3)*(8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_wt)*(fe_density)
 B = (a**3)*(molar_mass_cu)
 C = (a**3)*(molar_mass_cu)
 D = (8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_density)*(4/3)*(np.pi)
 
+total_run_time = 30*60
+time_steps = 10000
+# Time points for integration
+t = np.linspace(0, total_run_time, time_steps)
+c = total_run_time/time_steps
+def calculate_r (r,t):
+    
+    A = (a**3)*(8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_wt)*(fe_density)
+    B = (a**3)*(molar_mass_cu)
+    C = (a**3)*(molar_mass_cu)
+    D = (8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_density)*(4/3)*(np.pi)
+    tau = c
+    
+    #delay term
+    rlag = np.zeros_like(t)
+    rlag[t <=tau] = 0.0
+    rlag[t > tau] = r(t - tau)[t > tau]
+    
+    #dr/dt
+    drdt = ((1/3) * ((A*t + B*rlag) / (C + D*t)) ** (-2/3)) * ( ((C+D*t)*(A)-((A*t+B)*(D))) / ((C+D*t)**2) )
+   
+    return drdt
 
-y0 = [0.000000000000000000000000000000000000001]
-t_span = (0,30*60)
-t_eval = np.linspace(0,30*60,10000)
-y_prev = y0[0]
 
 
-def solve_with_previous_term(calculate_r, t_span, y0, t_eval, A, B, C, D):
-    y_values = [y0[0]]  # Start with the initial condition
-    for i in range(1, len(t_eval)):
-        # Solve the ODE for the next time step
-        sol = solve_ivp(lambda t, y: calculate_r(t, y, A, B, C, D, y_values[-1]), [t_eval[i-1], t_eval[i]], [y_values[-1]])
-        # Append the new value
-        y_values.append(sol.y[0, -1])
-    return t_eval, np.array(y_values)
 
+# Initial condition for r(t)
+r0 = np.array([0.00000000000000001])
 
-t, y = solve_with_previous_term(calculate_r, t_span, y0, t_eval, A, B, C, D)
-
+# Solve the DDE
+r = ddeint(calculate_r, r0, t)
 
 # Plot the solution
-plt.plot(t, y, label='y(t)')
-plt.xlabel('t')
-plt.ylabel('y')
-plt.title('Solution of the ODE with y_prev term')
+plt.figure(figsize=(10, 6))
+plt.plot(t, r, label='r(t)')
+plt.xlabel('Time')
+plt.ylabel('r')
+plt.title('Solution of Delay Differential Equation using ddeint')
 plt.legend()
 plt.grid(True)
 plt.show()
+
 
 
 
