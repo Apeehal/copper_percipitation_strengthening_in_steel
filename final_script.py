@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+
 
 # Constants
 R = 8.314  # Gas constant in J/(mol*K)
@@ -13,21 +15,22 @@ T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
 molar_volume = [(7.09e-6) * 3 * 16.35 * (T[i] - 25) for i in range(len(T))]
 
 cu_wt = 1.4/100
-material_density = 7800
+fe_density = 7800
 molar_mass_cu = 63.546*10**-3
-copper_density = 8850
+cu_density = 8850
 a = 100*10**-9
 
+r_values = []
+previous_r = 0
 
-# Function to calculate r values
-def calculate_r(interfacial_energy, molar_volume, diffusion_coefficient, T, previous_r=0):
-    def Ce (previous_r):
-        r = (((cu_wt)*(material_density))/(molar_mass_cu)) - ((copper_density)*(4/3)*(np.pi)*(previous_r**3))/((a**3)*(molar_mass_cu))
-        print(r)
-        return r
-    radius = np.cbrt((8 * interfacial_energy * (molar_volume**2) * Ce(previous_r) * diffusion_coefficient * t) / (9 * R * T) + (previous_r**3))
-    return radius
+A = (a**3)*(8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_wt)*(fe_density)
+B = (a**3)*(previous_r**3)*(molar_mass_cu)
+C = (a**3)*(molar_mass_cu)
+D = (8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_density)*(4/3)*(np.pi)
 
+def calculate_r(t,A,B,C,D):
+    return ((1/3)*(((A*t + B)/(C+D*t))**(-2/3)))*  ((((C+D*t)*(A))-((A*t+B)*(D)))/((C+D*t)**2))
+                                                
 
 # Calculating r values for each set of initial conditions
 r_values = []
