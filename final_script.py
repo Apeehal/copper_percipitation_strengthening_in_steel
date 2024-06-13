@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.integrate import ddeint
+from scipy.integrate import solve_ivp
 
 
 # Constants
@@ -33,34 +33,25 @@ total_run_time = 30*60
 time_steps = 10000
 # Time points for integration
 t = np.linspace(0, total_run_time, time_steps)
-c = total_run_time/time_steps
-def calculate_r (r,t):
-    
-    A = (a**3)*(8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_wt)*(fe_density)
-    B = (a**3)*(molar_mass_cu)
-    C = (a**3)*(molar_mass_cu)
-    D = (8)*(interfacial_energy[0])*(molar_volume[0]**2)*(diffusion_coefficient[0])*(cu_density)*(4/3)*(np.pi)
-    tau = c
-    
-    #delay term
-    rlag = np.zeros_like(t)
-    rlag[t <=tau] = 0.0
-    rlag[t > tau] = r(t - tau)[t > tau]
-    
-    #dr/dt
-    drdt = ((1/3) * ((A*t + B*rlag) / (C + D*t)) ** (-2/3)) * ( ((C+D*t)*(A)-((A*t+B)*(D))) / ((C+D*t)**2) )
-   
+
+dt = total_run_time/time_steps
+
+def percipitate_growth(t,r):
+    if t - dt < 0:
+        rlag = r0
+    else:
+        rlag = np.interp(t-dt,t_eval,sol.y[0])
+
+    drdt = (1/3)*((((A*t)+(B*(rlag**3)))/((C)+(D*t)))**(-2/3)) * (((C+D*t)(A)-(A*t+B*(rlag**3))*(D))/((C+D*t)**2))
     return drdt
 
+t_span = (0, 10)  # Time span for integration
+t_eval = np.linspace(*t_span, 1000)  # Time points for evaluation
+r0 = [1.0]  # Initial condition for r(t)
 
+sol = solve_ivp(percipitate_growth, t_span, r0, t_eval=t_eval)
 
-
-# Initial condition for r(t)
-r0 = np.array([0.00000000000000001])
-
-# Solve the DDE
-r = ddeint(calculate_r, r0, t)
-
+"""""
 # Plot the solution
 plt.figure(figsize=(10, 6))
 plt.plot(t, r, label='r(t)')
@@ -71,7 +62,7 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-
+"""
 
 
 """""
