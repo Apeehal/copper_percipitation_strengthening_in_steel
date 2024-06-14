@@ -1,12 +1,11 @@
-
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
 
 
 # Constants
 R = 8.314  # Gas constant in J/(mol*K)
-t = np.linspace(0.001, 30*60, 100000)  # Time array from 0 to 30 minutes with 1-second intervals
+#t = np.linspace(0.001, 30*60, 100000)  # Time array from 0 to 30 minutes with 1-second intervals
 
 # Initial conditions
 interfacial_energy = [475e-3, 450e-3, 350e-3]  # in J/m^2
@@ -20,72 +19,67 @@ cu_wt = 1.4/100
 fe_density = 7800
 molar_mass_cu = 63.546*10**-3
 cu_density = 8850
-a = 10000*10**-9
+#a = 1000*10**-9
+a = 348.79*10**-9
 
-
-
-A = (8*interfacial_energy[0]*(molar_volume[0]**2)*diffusion_coefficient[0])/(9*R*T[0])
+A = (8*interfacial_energy[0]*(molar_volume[0]**2)*diffusion_coefficient[0])/(9*R*T[2])
 B = (cu_wt*fe_density)/(molar_mass_cu)
 C = (cu_density*(4/3)*(np.pi))/((a**3)*(molar_mass_cu))
 
+r_initial = 0.128 * 10**-9
+#r_initial = 1.00782236e-07
+t0 = 0.0
+step = 0.01
+t_next = step
 
+# Define arrays to store results
+t_values = [t0]
+r_values = [r_initial]
 
+# Define the differential equation function
+def ode_function(t, r):
+    return (1/3) * (((A * B * t + r_initial**3) / (1 + A * C * t))**(-2/3)) * (((1 + A * C * t) * (A * B) - (A * B * t + r_initial**3) * (A * C)) / ((1 + A * C * t)**2))
 
+# Number of iterations
+num_iterations = 10 # Replace with your desired number of iterations
 
-r_initial = 0.128*10**-9
-def first_iteration(t, r):
-    return (1/3)*(((A*B*t+r_initial**3)/(1+A*C*t))**(-2/3))*(((1+A*C*t)*(A*B)-(A*B*t+r_initial**3)*(A*C))/((1+A*C*t)**2))
+# Iterative solving process
+for i in range(num_iterations):
+    # Solve the IVP
+    solution = solve_ivp(ode_function, (t0, t_next), [r_initial], t_eval=[t_next])
+    
+    # Extract the results
+    t = solution.t[-1]  # Last time point
+    r_next = solution.y[0][-1]  # Value of r at the last time point
+    
+    # Store the results in arrays
+    t_values.append(t)
+    r_values.append(r_next)
+    
+    # Print or use the result
+    #print(f"Iteration {i+1}: r_next = {r_next}")
+    
+    # Update initial conditions for the next iteration
+    r_initial = r_next
+    t0 = t_next
+    t_next = t + step  # Update the next time step as desired
 
+# Convert lists to numpy arrays for convenience (optional)
+t_values = np.array(t_values)
+r_values = np.array(r_values)
 
-"""
-t0 = 0
-r0 = [0.128*10**-9]
-t_end = 30
+# Print or use the final values
+#print("Final values:")
+#print("t_values:", t_values)
+print("r_values:", r_values[-1])
 
-
-# Solve the IVP with dense output enabled
-solution = solve_ivp(first_iteration, (t0, t_end), r0, method='RK45', dense_output=True)
-
-# Evaluate the solution at the next time step
-y_next = solution.sol(t_end)
-
-# Print the results
-print(f"Value of y at t = {t_end}: {y_next[0]}")
-
-"""
-
-# Set initial conditions
-t0 = 0        # Initial time
-r0 = [0.128*10**-9]      # Initial value of y
-t_next = 0.0000000001  # The next time step we want to find
-
-# Solve the IVP and evaluate only at the initial and next time step
-solution = solve_ivp(first_iteration, (t0, t_next), r0, t_eval=[t0, t_next])
-
-# Extract the results
-t = solution.t
-y = solution.y[0]
-
-#print(y[1])
-
-r_initial = y[1]
-print(r_initial)
-
-def second_iteration(t,r):
-    return (1/3)*(((A*B*t+r_initial**3)/(1+A*C*t))**(-2/3))*(((1+A*C*t)*(A*B)-(A*B*t+r_initial**3)*(A*C))/((1+A*C*t)**2))
-
-
-# Set initial conditions
-t0 = 0.0000000001 # Initial time
-r0 = [r_initial]      # Initial value of y
-t_next = 0.0000000002  # The next time step we want to find
-
-# Solve the IVP and evaluate only at the initial and next time step
-solution1 = solve_ivp(first_iteration, (t0, t_next), r0, t_eval=[t0, t_next])
-
-# Extract the results
-t1 = solution1.t
-y1 = solution1.y[0]
-
-print(y1[1])
-
+# Plotting the results
+plt.figure(figsize=(10, 6))
+plt.plot(t_values, r_values, marker='o', linestyle='-', color='b', label='Radius')
+plt.title('Radius vs Time')
+plt.xlabel('Time')
+plt.ylabel('Radius')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
