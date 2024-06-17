@@ -24,5 +24,9 @@ cu_density = 8850
 a = 348.79*10**-9
 
 k = 1
-
-dvdt = ((k*cu_wt*fe_density)/(mol_cu))  /  ( ( (  (3*e **(np.cbrt(((4*pi)/v)))) - v*e**( (-v/3) + (np.cbrt((4*pi)/3)) ) )    / ( 4* pi  ) )    + (   (k*cu_density*t)/((mol_cu)*(a**3))  +  (k*cu_density*v)/((mol_cu)*(a**3))  )       + (  ((v[-i]) * (e**(-v/3)) * (e**(np.cbrt((4*pi)/3))) )/(4*pi)   )    ) 
+dvdt = []
+v = []
+v[0] =( (0.128*10**-9) ** (3) ) * (4/3)
+ 
+for i in len(1, t):
+    dvdt[i] = ((k*cu_wt*fe_density)/(mol_cu))  /  ( ( (  (3*e **(np.cbrt(((4*pi)/v)))) - v*e**( (-v/3) + (np.cbrt((4*pi)/3)) ) )    / ( 4* pi  ) )    + (   (k*cu_density*t)/((mol_cu)*(a**3))  +  (k*cu_density*v)/((mol_cu)*(a**3))  )       + (  ((v[-i]) * (e**(-v/3)) * (e**(np.cbrt((4*pi)/3))) )/(4*pi)   )    ) 
