@@ -1,3 +1,4 @@
+
 import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ pi = np.pi
 e = np.e
 # Constants
 R = 8.314  # Gas constant in J/(mol*K)
-t = np.linspace(0.001, 30*60, 100000)  # Time array from 0 to 30 minutes with 1-second intervals
+t = np.linspace(0.00, 30*60, 100000)  # Time array from 0 to 30 minutes with 1-second intervals
 
 # Initial conditions
 interfacial_energy = [475e-3, 450e-3, 350e-3]  # in J/m^2
@@ -25,8 +26,8 @@ a = 348.79*10**-9
 
 k = 1
 dvdt = []
-v = []
-v[0] =( (0.128*10**-9) ** (3) ) * (4/3)
+v = np.zeros(100000)
+v[0] =( (0.128*10**(-9)) ** (3) ) * (4/3)
  
-for i in len(1, t):
-    dvdt[i] = ((k*cu_wt*fe_density)/(mol_cu))  /  ( ( (  (3*e **(np.cbrt(((4*pi)/v)))) - v*e**( (-v/3) + (np.cbrt((4*pi)/3)) ) )    / ( 4* pi  ) )    + (   (k*cu_density*t)/((mol_cu)*(a**3))  +  (k*cu_density*v)/((mol_cu)*(a**3))  )       + (  ((v[-i]) * (e**(-v/3)) * (e**(np.cbrt((4*pi)/3))) )/(4*pi)   )    ) 
+for i in range(1, 100000):
+    dvdt[i] = ((k*cu_wt*fe_density)/(mol_cu))  /  ( ( (  (3*e **(np.cbrt(((4*pi)/v[i])))) - v[i]*e**( (-v[i]/3) + (np.cbrt((4*pi)/3)) ) )    / ( 4* pi  ) )    + (   ((k*cu_density*t)+(k*cu_density*v[i]))/((mol_cu)*(a**3))  )       + (  ((v[-i]) * (e**(-v[i]/3)) * (e**(np.cbrt((4*pi)/3))) )/(4*pi)   )    ) 
