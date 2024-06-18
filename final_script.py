@@ -1,4 +1,5 @@
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,8 +10,8 @@ e = np.exp(1)
 R = 8.314e+18  # Gas constant in J/(mol*K)
 
 # Initial conditions
-interfacial_energy = [4.75e-19, 4.50e-19, 3.50e-19]  # in J/m^2
-#interfacial_energy = [51*10**-3, 123*10**-3, 314*10**-3]  # in J/m^2
+#interfacial_energy = [4.75e-19, 4.50e-19, 3.50e-19]  # in J/m^2
+interfacial_energy = [0.51*10**-19, 1.23*10**-19, 3.14*10**-19]  # in J/m^2
 #equilibreum_concentration = [0.011, 0.003, 0.0005]  # in mol/m^3
 diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
 T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
@@ -26,7 +27,7 @@ a = 348.79
 
 k_b = 1.380649e+18
 
-k = (8*interfacial_energy[0]*((molar_volume[1])**2)*diffusion_coefficient[0])/(9*R*T[0]*(e**((2*interfacial_energy[0]*molar_volume[0])/(k_b*T[0]))))
+k = (8*interfacial_energy[2]*((molar_volume[2])**2)*diffusion_coefficient[2])/(9*R*T[2]*(e**((2*interfacial_energy[2]*molar_volume[2])/(k_b*T[2]))))
 # Define constants and initial conditions
 #k = 10000000000000000000000000
 cu_wt = 1.04 / 100
@@ -43,7 +44,8 @@ t = np.linspace(0, 30, 100000)
 dt = t[1] - t[0]  # Timestep based on the linspace definition
 
 # Initial conditions
-v0 = (0.128 * 10) ** 3 * (4 / 3)
+#v0 = (0.128 * 10) ** 3 * (4 / 3)
+v0 = 9.6022845
 v = np.zeros_like(t)
 v[0] = v0
 
@@ -94,16 +96,16 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-r = np.cbrt((3/(4*pi))*(v))
+#r = np.cbrt((3/(4*pi))*(v))
 
 # Plot v over time as well
 plt.figure(figsize=(10, 6))
-plt.plot(t, r, label='v', marker='o')
+plt.plot(t, v, label='v', marker='o')
 plt.xlabel('Time t')
 plt.ylabel('v')
-plt.title('Plot of r over Time')
+plt.title('Plot of v over Time')
 plt.legend()
 plt.grid(True)
 plt.show()
 
-print(r)
+#print(r)
