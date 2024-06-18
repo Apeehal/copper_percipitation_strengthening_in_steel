@@ -1,3 +1,4 @@
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -38,7 +39,7 @@ e = np.exp(1)
 pi = np.pi
 
 # Time parameters
-t = np.linspace(0, 30, 10000)
+t = np.linspace(0, 30, 100000)
 dt = t[1] - t[0]  # Timestep based on the linspace definition
 
 # Initial conditions
@@ -62,14 +63,16 @@ for i in range(1, len(t)):
         term2_numerator = (3 * e ** (np.cbrt((4 * pi) / v[i-1]))) - v[i-1] * e ** ((-v[i-1] / 3) + np.cbrt((4 * pi) / 3))
         term2 = term2_numerator / const2
 
-        term3 = (const3 * t[i]) + (const3 * v[i-1])
+        #term3 = (const3 * t[i]) + (const3 * v[i-1])
+        term3 = const3*t[i]
+    
 
         if i > 0:
             term4 = (v[i-1] * e ** (-v[i] / 3)) * const4 / const2
         else:
             term4 = (v[i] * e ** (-v[i] / 3)) * const4 / const2 # This case is handled implicitly by starting from i=1
 
-        dvdt[i] = term1 / (term2 + term3 + term4)
+        dvdt[i] = term1 - (const3*v[i]) / (term2 + term3 + term4)
 
         # Update v using the computed dvdt
         v[i] = v[i-1] + dvdt[i] * dt
