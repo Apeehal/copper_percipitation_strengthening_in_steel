@@ -1,19 +1,44 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+pi = np.pi
+e = np.exp(1)
+# Constants
+R = 8.314e+18  # Gas constant in J/(mol*K)
+
+# Initial conditions
+interfacial_energy = [4.75e-19, 4.50e-19, 3.50e-19]  # in J/m^2
+#interfacial_energy = [51*10**-3, 123*10**-3, 314*10**-3]  # in J/m^2
+#equilibreum_concentration = [0.011, 0.003, 0.0005]  # in mol/m^3
+diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
+T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
+#molar_volume = [(7.09e-6) * 3 * 16.35 * (T[i] - 25) for i in range(len(T))]
+molar_volume = [3.57554070675e+26, 3.15822330675e+26, 2.6018001067499996e+26]
+cu_wt = 1.04/100
+fe_density = 7800/(1*10**-27)
+mol_cu = 63.546*10**-3
+cu_density = 8850/(1*10**-27)
+#a = 1000*10**-9
+a = 348.79
+
+
+k_b = 1.380649e+18
+
+k = (8*interfacial_energy[0]*((molar_volume[1])**2)*diffusion_coefficient[0])/(9*R*T[0]*(e**((2*interfacial_energy[0]*molar_volume[0])/(k_b*T[0]))))
 # Define constants and initial conditions
-k = 10000000000000000000000000000000
+#k = 10000000000000000000000000
 cu_wt = 1.04 / 100
 
-fe_density = 7800 / (1e-27)
+fe_density = 7.8e-24
 mol_cu = 63.546 * 1e-3
-cu_density = 8850 / (1e-27)
+cu_density = 8.85e-24
 a = 348.79
 e = np.exp(1)
 pi = np.pi
 
 # Time parameters
-t = np.linspace(0, 1, 10000)
+t = np.linspace(0, 30, 10000)
 dt = t[1] - t[0]  # Timestep based on the linspace definition
 
 # Initial conditions
@@ -73,7 +98,7 @@ plt.figure(figsize=(10, 6))
 plt.plot(t, r, label='v', marker='o')
 plt.xlabel('Time t')
 plt.ylabel('v')
-plt.title('Plot of v over Time')
+plt.title('Plot of r over Time')
 plt.legend()
 plt.grid(True)
 plt.show()
