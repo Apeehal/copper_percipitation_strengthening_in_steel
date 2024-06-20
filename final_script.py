@@ -1,6 +1,29 @@
+
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+
+    
+pi = np.pi
+e = np.exp(1)
+R = 8.314e+18  # Gas constant in J/(mol*K)
+
+interfacial_energy = [0.51*10**-19, 1.23*10**-19, 3.14*10**-19]  # in J/m^2
+diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
+T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
+molar_volume = [3.57554070675e+26, 3.15822330675e+26, 2.6018001067499996e+26]
+a = 348.79
+k_b = 1.380649e+18
+
+
+cu_wt = 1.04 / 100
+
+fe_density = 7.8e-24
+mol_cu = 63.546 * 1e-3
+cu_density = 8.85e-24
+#a = 348.79
+#a = 10000000000
 
 # Time parameters
 t = np.linspace(0, 30, 100000)
@@ -19,31 +42,13 @@ dvdt1 = np.zeros_like(t)
 
 for i in range(1, len(t)):
     
-    pi = np.pi
-    e = np.exp(1)
-    R = 8.314e+18  # Gas constant in J/(mol*K)
-
-    interfacial_energy = [0.51*10**-19, 1.23*10**-19, 3.14*10**-19]  # in J/m^2
-    diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
-    T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
-    molar_volume = [3.57554070675e+26, 3.15822330675e+26, 2.6018001067499996e+26]
-    a = 348.79
-    k_b = 1.380649e+18
-
     k = (8*interfacial_energy[0]*((molar_volume[0])**2)*diffusion_coefficient[0])/(9*R*T[0]*(e**((2*interfacial_energy[0]*molar_volume[0])/(k_b*T[0]))))
-    cu_wt = 1.04 / 100
-
-    fe_density = 7.8e-24
-    mol_cu = 63.546 * 1e-3
-    cu_density = 8.85e-24
-    a = 348.79
-
+    
     const1 = (k * cu_wt * fe_density) / mol_cu
     const2 = (4 * pi)
     const3 = (k * cu_density) / ((mol_cu) * (a ** 3))
     const4 = e ** (np.cbrt((4 * pi) / 3))
 
-    
     try:
         term1 = const1
 
@@ -59,7 +64,7 @@ for i in range(1, len(t)):
         else:
             term4 = (v1[i] * e ** (-v1[i] / 3)) * const4 / const2 # This case is handled implicitly by starting from i=1
 
-        dvdt1[i] = term1 - (const3*v1[i]) / (term2 + term3 + term4)
+        dvdt1[i] = (term1 - (const3*v1[i])) / (term2 + term3 + term4)
 
         # Update v using the computed dvdt
         v1[i] = v1[i-1] + dvdt1[i] * dt
@@ -98,6 +103,8 @@ print(r1)
 
 
 
+
+
 v2 = np.zeros_like(t)
 v2[0] = v1[-1]
 
@@ -107,24 +114,8 @@ dvdt2 = np.zeros_like(t)
 
 for i in range(1, len(t)):
     
-    pi = np.pi
-    e = np.exp(1)
-    R = 8.314e+18  # Gas constant in J/(mol*K)
-
-    interfacial_energy = [0.51*10**-19, 1.23*10**-19, 3.14*10**-19]  # in J/m^2
-    diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
-    T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
-    molar_volume = [3.57554070675e+26, 3.15822330675e+26, 2.6018001067499996e+26]
-    a = 348.79
-    k_b = 1.380649e+18
-
     k = (8*interfacial_energy[1]*((molar_volume[1])**2)*diffusion_coefficient[1])/(9*R*T[1]*(e**((2*interfacial_energy[1]*molar_volume[1])/(k_b*T[1]))))
     cu_wt = 1.04 / 100
-
-    fe_density = 7.8e-24
-    mol_cu = 63.546 * 1e-3
-    cu_density = 8.85e-24
-    a = 348.79
 
     const1 = (k * cu_wt * fe_density) / mol_cu
     const2 = (4 * pi)
@@ -147,7 +138,7 @@ for i in range(1, len(t)):
         else:
             term4 = (v2[i] * e ** (-v2[i] / 3)) * const4 / const2 # This case is handled implicitly by starting from i=1
 
-        dvdt2[i] = term1 - (const3*v2[i]) / (term2 + term3 + term4)
+        dvdt2[i] = (term1 - (const3*v2[i])) / (term2 + term3 + term4)
 
         # Update v using the computed dvdt
         v2[i] = v2[i-1] + dvdt2[i] * dt
@@ -197,25 +188,8 @@ v3[0] = v2[-1]
 dvdt3 = np.zeros_like(t)
 
 for i in range(1, len(t)):
-    
-    pi = np.pi
-    e = np.exp(1)
-    R = 8.314e+18  # Gas constant in J/(mol*K)
-
-    interfacial_energy = [0.51*10**-19, 1.23*10**-19, 3.14*10**-19]  # in J/m^2
-    diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
-    T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
-    molar_volume = [3.57554070675e+26, 3.15822330675e+26, 2.6018001067499996e+26]
-    a = 348.79
-    k_b = 1.380649e+18
 
     k = (8*interfacial_energy[2]*((molar_volume[2])**2)*diffusion_coefficient[2])/(9*R*T[2]*(e**((2*interfacial_energy[2]*molar_volume[2])/(k_b*T[2]))))
-    cu_wt = 1.04 / 100
-
-    fe_density = 7.8e-24
-    mol_cu = 63.546 * 1e-3
-    cu_density = 8.85e-24
-    a = 348.79
 
     const1 = (k * cu_wt * fe_density) / mol_cu
     const2 = (4 * pi)
@@ -238,7 +212,7 @@ for i in range(1, len(t)):
         else:
             term4 = (v3[i] * e ** (-v3[i] / 3)) * const4 / const2 # This case is handled implicitly by starting from i=1
 
-        dvdt3[i] = term1 - (const3*v3[i]) / (term2 + term3 + term4)
+        dvdt3[i] = (term1 - (const3*v3[i])) / (term2 + term3 + term4)
 
         # Update v using the computed dvdt
         v3[i] = v3[i-1] + dvdt3[i] * dt
@@ -292,3 +266,4 @@ plt.title('Plot of r over All Time')
 plt.legend()
 plt.grid(True)
 plt.show()
+
