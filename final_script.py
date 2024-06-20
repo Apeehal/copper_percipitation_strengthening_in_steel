@@ -1,4 +1,5 @@
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,7 +10,9 @@ pi = np.pi
 e = np.exp(1)
 R = 8.314e+18  # Gas constant in J/(mol*K)
 
-interfacial_energy = [0.51*10**-19, 1.23*10**-19, 3.14*10**-19]  # in J/m^2
+#interfacial_energy = [0.51*10**-19, 1.23*10**-19, 3.14*10**-19]  # in J/m^2
+
+interfacial_energy = [5.2e-16, 6.1e-16, 3.14*10**-19]  # in J/m^2
 diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
 T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
 molar_volume = [3.57554070675e+26, 3.15822330675e+26, 2.6018001067499996e+26]
@@ -266,4 +269,21 @@ plt.title('Plot of r over All Time')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+
+r1 = r1[-1]*10**-9
+r2 = r2[-1]*10**-9
+r3 = r3[-1]*10**-9
+
+G = 81600*10**6
+b = 0.255*10**-9
+f = 0.058
+strength_A = ((0.538*G*b*(np.sqrt(f)))/(2*r1))*(np.log((r1)/(2*b)))
+print(strength_A)
+
+strength_B = ((0.538*G*b*(np.sqrt(f)))/(2*r2))*(np.log((r2)/(2*b)))
+print(strength_B)
+
+strength_C = ((0.538*G*b*(np.sqrt(f)))/(2*r3))*(np.log((r3)/(2*b)))
+print(strength_C)
 
