@@ -1,30 +1,31 @@
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
-    
 pi = np.pi
 e = np.exp(1)
 R = 8.314e+18  # Gas constant in J/(mol*K)
 
 #interfacial_energy = [0.51*10**-19, 1.23*10**-19, 3.14*10**-19]  # in J/m^2
-
-interfacial_energy = [5.2e-16, 6.1e-16, 3.14*10**-19]  # in J/m^2
-diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
+#interfacial_energy = [5.2e-16, 5.56e-16, 4.60e-16]  # 
+interfacial_energy = [0.61, 0.556, 0.52 ]
+#diffusion_coefficient = [2.6e+11, 4e+9, 2e+6]  # in m^2/s
+diffusion_coefficient = [260, 4, 0.002]
 T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
-molar_volume = [3.57554070675e+26, 3.15822330675e+26, 2.6018001067499996e+26]
+#molar_volume = [3.57554070675e+26, 3.15822330675e+26, 2.6018001067499996e+26]
+#molar_volume = [7.1080537e+26, 7.1080537e+26, 7.1080537e+26]
 a = 348.79
-k_b = 1.380649e+18
-
+#k_b = 1.380649e23
+#k_b = 1380649000000000000
+k_b = 1.380649e-5 
 
 cu_wt = 1.04 / 100
-
-fe_density = 7.8e-24
+fe_density = 7.87e-24
 mol_cu = 63.546 * 1e-3
-cu_density = 8.85e-24
+cu_density = 8.94e-24
+mol_vol_cu = mol_cu/cu_density
+molar_volume = [mol_vol_cu, mol_vol_cu, mol_vol_cu]
+
 #a = 348.79
 #a = 10000000000
 
@@ -34,6 +35,7 @@ dt = t[1] - t[0]  # Timestep based on the linspace definition
     
 # Initial conditions
 vA0 = (0.128 * 10) ** 3 * (4 / 3)
+#vA0 = 100
     #v0 = 9.6022845
     #vv0 = 
 v1 = np.zeros_like(t)
@@ -270,6 +272,7 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
+#stress
 
 r1 = r1[-1]*10**-9
 r2 = r2[-1]*10**-9
@@ -277,7 +280,7 @@ r3 = r3[-1]*10**-9
 
 G = 81600*10**6
 b = 0.255*10**-9
-f = 0.058
+f = 1.7e16
 strength_A = ((0.538*G*b*(np.sqrt(f)))/(2*r1))*(np.log((r1)/(2*b)))
 print(strength_A)
 
