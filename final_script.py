@@ -16,11 +16,11 @@ k_b = 1.380649e-5
 
 wt_cu = 1.04 / 100
 fe_density = 7.87e-24
-mol_cu = 63.546 * 1e-3
+mol_cu = 63.546 * 1e-3 * 1e22
 cu_density = 8.94e-24
 mol_vol_cu = mol_cu/cu_density
 mol_vol_cu = [mol_vol_cu, mol_vol_cu, mol_vol_cu]
-mol_vol_fe = [7.09e21, 7.09e21,7.09e21]
+mol_vol_fe = [7.09e21/10e22, 7.09e21/10e22,7.09e21/10e22]
 
 # Time parameters
 t = np.linspace(0, 30, 100000)
