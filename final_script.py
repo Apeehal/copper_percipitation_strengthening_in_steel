@@ -1,6 +1,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+
 
 pi = np.pi
 e = np.exp(1)
@@ -22,69 +24,38 @@ mol_vol_cu = mol_cu/cu_density
 mol_vol_cu = [mol_vol_cu, mol_vol_cu, mol_vol_cu]
 mol_vol_fe = [7.09e21, 7.09e21,7.09e21]
 
-# Time parameters
-t = np.linspace(0, 30, 100000)
-dt = t[1] - t[0]  # Timestep based on the linspace definition
-    
-# Initial conditions
-rA0 = 0.128
-r1 = np.zeros_like(t)
-r1[0] = rA0
 
-
-# Iterate to solve for v and dvdt
-drdt1 = np.zeros_like(t)
-
-for i in range(1, len(t)):
-    
+r_initial = 0.128*10**-9
+def first_iteration(t,r):
     alpha = (2*interfacial_energy[0]*mol_vol_fe[0])/(k_b*T[0])
     beta = (8*interfacial_energy[0]*((mol_vol_cu[0])**2)*diffusion_coefficient[0])/(9*R*T[0])
-    
-    try:
-        term1 = (beta*wt_cu*fe_density)/(mol_cu)
-        term2 = (beta*cu_density*4*pi*(r1[i]**3))/(3*(a**3)*mol_cu)
+    term1 = (beta*wt_cu*fe_density)/(mol_cu)
+    term2 = (beta*cu_density*4*pi*(r**3))/(3*(a**3)*mol_cu)
         
-        term3 = np.exp(alpha/r1[i])  *  (3*r1[i]-alpha)
-        
-        if i > 0:
-            term4 = np.exp(alpha/r1[i])*(r1[i-1]**3)*( (alpha/(r1[i]**2)) - 1 )
-        else:
-            term4 = np.exp(alpha/r1[i])*(r1[i]**3)*( (alpha/(r1[i]**2)) - 1 )
+    term3 = np.exp(alpha/r)  *  (3*r-alpha)
+
+    term4 = np.exp(alpha/r)*(r**3)*( (alpha/(r**2)) - 1 )
             
-        term5 = (beta*cu_density*4*pi*(r1[i]**2)*t[i])/((a**3)*mol_cu)
-        
-        drdt1[i] = (term1 + term2) / (term3 + term4 + term5)
+    term5 = (beta*cu_density*4*pi*(r**2)*t)/((a**3)*mol_cu)
+    
+    drdt1 =  (term1 + term2) / (term3 + term4 + term5) 
 
-        # Update v using the computed dvdt
-        r1[i] = r1[i-1] + drdt1[i] * dt
+    return drdt1
 
-    except ZeroDivisionError as zde:
-        print(f"ZeroDivisionError at index {i}: {zde}")
-        drdt1[i] = np.nan  # Handle division by zero
-    except Exception as ex:
-        print(f"Error at index {i}: {ex}")
-        drdt1[i] = np.nan  # Handle other exceptions
+# Set initial conditions
+t0 = 0        # Initial time
+r0 = [0.128*10**-9]      # Initial value of y
+t_next = 0.0000000001  # The next time step we want to find
 
-    # Plot the results
-plt.figure(figsize=(10, 6))
-plt.plot(t, drdt1, label='dvdt', marker='o')
-plt.xlabel('Time t')
-plt.ylabel('dvdt1')
-plt.title('Plot of dvdt over Time')
-plt.legend()
-plt.grid(True)
-plt.show()
+# Solve the IVP and evaluate only at the initial and next time step
+solution = solve_ivp(first_iteration, (t0, t_next), r0, t_eval=[t0, t_next])
 
+# Extract the results
+t = solution.t
+y = solution.y[0]
 
+#print(y[1])
 
-    # Plot v over time as well
-plt.figure(figsize=(10, 6))
-plt.plot(t, r1, label='r', marker='o')
-plt.xlabel('Time t')
-plt.ylabel('r')
-plt.title('Plot of r1 over Time')
-plt.legend()
-plt.grid(True)
-plt.show()
+r_initial = y[1]
+print(r_initial)
 
-print(r1)
