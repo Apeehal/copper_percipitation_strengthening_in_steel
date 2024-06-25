@@ -1,90 +1,143 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
 
-pi = np.pi
-e = np.exp(1)
-R = 8.314e+18  # Gas constant in J/(mol*K)
+R = 8.314  # Gas constant in J/(mol*K)
 
-interfacial_energy = [0.61, 0.556, 0.52 ]
-diffusion_coefficient = [260, 4, 0.002]
+interfacial_energy = [0.61, 0.556, 0.52]
+diffusion_coefficient = [2.6e-16, 4e-18, 2e-21]
 T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
 
-a = 348.79
+#a = 348.79e-9
 
-k_b = 1.380649e-5 
+k_b = 1.380649e-23
 
 wt_cu = 1.04 / 100
-fe_density = 7.87e-24
-mol_cu = 63.546 * 1e-3 * 1e22
-cu_density = 8.94e-24
-mol_vol_cu = mol_cu/cu_density
-mol_vol_cu = [mol_vol_cu, mol_vol_cu, mol_vol_cu]
-mol_vol_fe = [7.09e21/10e22, 7.09e21/10e22,7.09e21/10e22]
+fe_density = 7800
+mol_mass_cu = 63.546 * 1e-3
+cu_density = 8940
+mol_vol_cu = mol_mass_cu / cu_density
+mol_vol_fe = 7.09e-6
 
-# Time parameters
-t = np.linspace(0, 30, 100000)
-dt = t[1] - t[0]  # Timestep based on the linspace definition
+
+
+
+solubility = 1514
+
+def radius(t,r1):
+    term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
+    term2 = 9*R*T[0]
+    numerator = term1/term2
     
-# Initial conditions
-rA0 = 0.128
-r1 = np.zeros_like(t)
-r1[0] = rA0
-
-
-# Iterate to solve for v and dvdt
-drdt1 = np.zeros_like(t)
-
-for i in range(1, len(t)):
+    term3 = 3*(r1**2)
     
-    alpha = (2*interfacial_energy[0]*mol_vol_fe[0])/(k_b*T[0])
-    beta = (8*interfacial_energy[0]*((mol_vol_cu[0])**2)*diffusion_coefficient[0])/(9*R*T[0])
+    term4 = (8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*t)/(9*R*T[0])
+    term5 = solubility
+    term6 = (2*interfacial_energy[0]*1.182e-29*np.exp((2*interfacial_energy[0]*1.182e-29)/(k_b*T[0]*r1)) )/(k_b*T[0]*(r1**2))
     
-    try:
-        term1 = (beta*wt_cu*fe_density)/(mol_cu)
-        term2 = (beta*cu_density*4*pi*(r1[i]**3))/(3*(a**3)*mol_cu)
-        
-        term3 = np.exp(alpha/r1[i])  *  (3*r1[i]-alpha)
-        
-        if i > 0:
-            term4 = np.exp(alpha/r1[i])*(r1[i-1]**3)*( (alpha/(r1[i]**2)) - 1 )
-        else:
-            term4 = np.exp(alpha/r1[i])*(r1[i]**3)*( (alpha/(r1[i]**2)) - 1 )
-            
-        term5 = (beta*cu_density*4*pi*(r1[i]**2)*t[i])/((a**3)*mol_cu)
-        
-        drdt1[i] = (term1 + term2) / (term3 + term4 + term5)
+    denominator = term3+term4*term5*term6
+    
+    return numerator/denominator
 
-        # Update v using the computed dvdt
-        r1[i] = r1[i-1] + drdt1[i] * dt
+# Initial condition
+y0 = [0.128e-9]
 
-    except ZeroDivisionError as zde:
-        print(f"ZeroDivisionError at index {i}: {zde}")
-        drdt1[i] = np.nan  # Handle division by zero
-    except Exception as ex:
-        print(f"Error at index {i}: {ex}")
-        drdt1[i] = np.nan  # Handle other exceptions
+# Time span (start and end times)
+t_span = (0, 30*60)
 
-    # Plot the results
+# Time points where solution is to be computed
+t_eval = np.linspace(t_span[0], t_span[1], 100000)
+
+# Solve the IVP using solve_ivp with the 'RK45' method
+sol1 = solve_ivp(radius, t_span, y0, method='RK45', t_eval=t_eval)
+
+r1 = sol1.y[0]
+t1 = np.linspace(0,30*60,100000)
+
+
+
+
+
+solubility = 1514
+
+def radius2(t,r2):
+    term1 = 8*interfacial_energy[1]*(mol_vol_cu**2)*diffusion_coefficient[1]*solubility* np.exp(  (2*interfacial_energy[1]* 1.182e-29) /  (r2*k_b*T[1])  )   
+    term2 = 9*R*T[1]
+    numerator = term1/term2
+    
+    term3 = 3*(r2**2)
+    
+    term4 = (8*interfacial_energy[1]*(mol_vol_cu**2)*diffusion_coefficient[1]*t)/(9*R*T[1])
+    term5 = solubility
+    term6 = (2*interfacial_energy[1]*1.182e-29*np.exp((2*interfacial_energy[1]*1.182e-29)/(k_b*T[1]*r2)) )/(k_b*T[1]*(r2**2))
+    
+    denominator = term3+term4*term5*term6
+    
+    return numerator/denominator
+
+# Initial condition
+y0 = [r1[-1]]
+
+# Time span (start and end times)
+t_span = (0, 30*60)
+
+# Time points where solution is to be computed
+t_eval = np.linspace(t_span[0], t_span[1], 100000)
+
+# Solve the IVP using solve_ivp with the 'RK45' method
+sol3 = solve_ivp(radius2, t_span, y0, method='RK45', t_eval=t_eval)
+
+r2 = sol3.y[0]
+t2 = np.linspace(30*60,60*60,100000)
+
+
+
+
+
+solubility = 1514
+
+def radius3(t,r3):
+    term1 = 8*interfacial_energy[2]*(mol_vol_cu**2)*diffusion_coefficient[2]*solubility* np.exp(  (2*interfacial_energy[2]* 1.182e-29) /  (r3*k_b*T[2])  )   
+    term2 = 9*R*T[2]
+    numerator = term1/term2
+    
+    term3 = 3*(r3**2)
+    
+    term4 = (8*interfacial_energy[2]*(mol_vol_cu**2)*diffusion_coefficient[2]*t)/(9*R*T[2])
+    term5 = solubility
+    term6 = (2*interfacial_energy[2]*1.182e-29*np.exp((2*interfacial_energy[2]*1.182e-29)/(k_b*T[2]*r3)) )/(k_b*T[2]*(r3**2))
+    
+    denominator = term3+term4*term5*term6
+    
+    return numerator/denominator
+
+# Initial condition
+y0 = [r2[-1]]
+
+# Time span (start and end times)
+t_span = (0, 30*60)
+
+# Time points where solution is to be computed
+t_eval = np.linspace(t_span[0], t_span[1], 100000)
+
+# Solve the IVP using solve_ivp with the 'RK45' method
+sol3 = solve_ivp(radius3, t_span, y0, method='RK45', t_eval=t_eval)
+
+r3 = sol3.y[0]
+t3 = np.linspace(60*60,90*60,100000)
+
+
 plt.figure(figsize=(10, 6))
-plt.plot(t, drdt1, label='dvdt', marker='o')
-plt.xlabel('Time t')
-plt.ylabel('dvdt1')
-plt.title('Plot of dvdt over Time')
+plt.plot(t1, r1 * 1e9, label='T = {} K'.format(T[0]))
+plt.plot(t2, r2 * 1e9, label='T = {} K'.format(T[1]))
+plt.plot(t3, r3 * 1e9, label='T = {} K'.format(T[2]))
+plt.xlabel('Time (s)')
+plt.ylabel('Radius (nm)')
+plt.title('Particle Radius Evolution over Time')
 plt.legend()
 plt.grid(True)
+plt.tight_layout()
 plt.show()
 
 
-
-    # Plot v over time as well
-plt.figure(figsize=(10, 6))
-plt.plot(t, r1, label='r', marker='o')
-plt.xlabel('Time t')
-plt.ylabel('r')
-plt.title('Plot of r1 over Time')
-plt.legend()
-plt.grid(True)
-plt.show()
-
-print(r1)
