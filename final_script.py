@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
 R = 8.314  # Gas constant in J/(mol*K)
-
+pi = np.pi
 interfacial_energy = [0.61, 0.556, 0.52]
 diffusion_coefficient = [2.6e-16, 4e-18, 2e-21]
 T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
@@ -133,11 +133,14 @@ plt.plot(t1, r1 * 1e9, label='T = {} K'.format(T[0]))
 plt.plot(t2, r2 * 1e9, label='T = {} K'.format(T[1]))
 plt.plot(t3, r3 * 1e9, label='T = {} K'.format(T[2]))
 plt.xlabel('Time (s)')
-plt.ylabel('Radius (nm)')
+plt.ylabel('Precipitate Radius (nm)')
 plt.title('Particle Radius Evolution over Time')
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+
+
 
 
