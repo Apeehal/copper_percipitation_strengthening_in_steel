@@ -140,7 +140,18 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+vol_frac = 9.11e-3
 
+#shear stress orowan:
+J = 1 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
+G = 48300e6
+b = 0.255e-9
+nu = 0.33 #can again be used as a fiting parameter (between 0.25 and 0.33)
+Ls = np.sqrt(r3[-1]*((2*pi)/(3*vol_frac)))
+rs = r3[-1]
+ri = 4*b #meant to be between b and 4b 
 
+gain_tensile_strength = 3*((J*G*b)/(2*pi*np.sqrt(1-nu)*Ls))*np.log(2*rs/ri)
+print(gain_tensile_strength)
 
 
