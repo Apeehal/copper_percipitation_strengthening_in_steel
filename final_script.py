@@ -1,3 +1,13 @@
+"""
+Attempting to model the change in radius of copper precipitates in TRIP steel from the following paper:
+https://www.sciencedirect.com/science/article/pii/S0261306914004361
+
+Then comparing and fitting the following strengthening models to compare the gain in strength between sample B&C:
+Orowan
+Ashby-Orowan
+Jackson-Reed
+Russel-Brown
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
