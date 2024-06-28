@@ -170,3 +170,4 @@ Lx = (1.77*r1[-1])/(np.sqrt(vol_frac))
 
 gain_tensile_strength_Russel_Brown = ((0.8*G*b)/(Lx))*(np.sqrt(1-(0.6**2)))*10**-6 + solution_strengthening(Lx)
 print("Russel-Brown", gain_tensile_strength_Russel_Brown)
+
