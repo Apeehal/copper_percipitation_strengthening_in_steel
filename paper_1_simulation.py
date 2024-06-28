@@ -1,4 +1,4 @@
-"""
+"""""
 Attempting to model the change in radius of copper precipitates in TRIP steel from the following paper:
 https://www.sciencedirect.com/science/article/pii/S0261306914004361
 
@@ -301,4 +301,3 @@ print(strength_B)
 
 strength_C = ((0.538*G*b*(np.sqrt(f)))/(2*r3[-1]))*(np.log((r3[-1])/(2*b)))
 print(strength_C)
-                             
