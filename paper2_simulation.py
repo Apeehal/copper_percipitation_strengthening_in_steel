@@ -87,7 +87,7 @@ plt.grid(True)
 plt.show()
 
 
-vol_frac = (wt_cu/cu_density)/(100/fe_density)
+vol_frac = (wt_cu/cu_density)/(100/fe_density) *100
 Ls = r1[-1]*(np.sqrt(((2*pi)/(3*vol_frac))))
 M = 3#conversion factor between shear and tensile strength
 J = 1 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
