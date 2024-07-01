@@ -2,7 +2,7 @@
 Attempting to model the change in radius of copper precipitates in IF steel from the following paper:
 https://www.sciencedirect.com/science/article/pii/S0167577X06012535
 
-Then comparing and fitting the following strengthening models to compare the gain in strength between sample B&C:
+Then comparing and fitting the following strengthening models to compare the gain in strength:
 Orowan
 Ashby-Orowan
 Jackson-Reed
