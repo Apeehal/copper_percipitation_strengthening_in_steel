@@ -26,13 +26,13 @@ from scipy.integrate import solve_ivp
 R = 8.314  # Gas constant in J/(mol*K)
 pi = np.pi
 k_b = 1.380649e-23
-wt_cu = 0.57
+wt_cu = 1.18
 fe_density = 7800
 mol_mass_cu = 63.546 * 1e-3
 cu_density = 8940
 mol_vol_cu = mol_mass_cu / cu_density
 mol_vol_fe = 7.09e-6
-h = 0.5
+h = 1
 #a = 348.79e-9
 
 
@@ -164,5 +164,5 @@ e1_e2 = 0.6 * (np.log10(r1[-1]/Lx)/np.log10(Lx/ri)) + ( np.log10(Lx/r1[-1])  / n
 
 
 
-gain_tensile_strength_Russel_Brown = ((J*G*b)/(Lx))*((1-(e1_e2**2))**(3/4))*10**-6
+gain_tensile_strength_Russel_Brown = ((J*G*b)/(Lx))*((1-(e1_e2**2))**(1/2))*10**-6
 print("Russel-Brown", gain_tensile_strength_Russel_Brown)
