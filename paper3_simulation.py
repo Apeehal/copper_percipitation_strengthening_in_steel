@@ -164,5 +164,38 @@ e1_e2 = 0.6 * (np.log10(r1[-1]/Lx)/np.log10(Lx/ri)) + ( np.log10(Lx/r1[-1])  / n
 
 
 
-gain_tensile_strength_Russel_Brown = ((J*G*b)/(Lx))*((1-(e1_e2**2))**(1/2))*10**-6
-print("Russel-Brown", gain_tensile_strength_Russel_Brown)
+gain_yield_strength_Russel_Brown = ((J*G*b)/(Lx))*((1-(e1_e2**2))**(1/2))*10**-6
+print("Russel-Brown", gain_yield_strength_Russel_Brown)
+
+
+
+#plotting bar chart
+categories = ['Orowan', 'Ashby-Orowan', 'Russel-Brown']
+values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_yield_strength_Russel_Brown]
+values2 = [47, 47, 16]
+
+# Number of categories
+n = len(categories)
+
+# Positions of the bars on the x-axis
+r1 = np.arange(n)
+r2 = [x + 0.25 for x in r1]
+
+# Create bar chart
+plt.bar(r1, values1, color='blue', width=0.25, edgecolor='grey', label='Model')
+plt.bar(r2, values2, color='green', width=0.25, edgecolor='grey', label='Experiment')
+
+# Add labels
+plt.xlabel('Categories')
+plt.ylabel('Values')
+plt.title('Side-by-Side Bar Chart')
+
+# Add xticks on the middle of the bars
+plt.xticks([r + 0.125 for r in range(n)], categories)
+
+# Add legend
+plt.legend()
+
+# Show the plot
+plt.show()
+

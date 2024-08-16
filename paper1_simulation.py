@@ -19,39 +19,71 @@ interfacial_energy = [0.61, 0.556, 0.52]
 diffusion_coefficient = [2.6e-16, 4e-18, 2e-21]
 T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
 
-#a = 348.79e-9
-
 k_b = 1.380649e-23
-
 wt_cu = 1.04 / 100
 fe_density = 7800
 mol_mass_cu = 63.546 * 1e-3
+mol_mass_fe = 55.85e-3
 cu_density = 8940
 mol_vol_cu = mol_mass_cu / cu_density
 mol_vol_fe = 7.09e-6
 
+vol_fe = 100/fe_density
+vol_cu = (wt_cu*100)/cu_density
+
+#vol_frac = 0.012293
+vol_frac = vol_cu/vol_fe
+print(vol_frac)
 
 
+solubility = []
+for i in T:
+    x = 10 ** ((6111850/(i**2)) - (16478.2/i) + 10.3242)
+    y = ((x)/mol_mass_cu)/(100/mol_mass_fe)
+    solubility.append(x)
+print('array',solubility)
 
-solubility = 1514
+
+"""""
+import sympy as sp
+ 
+def compute_integral(lower_bound):
+    # Define the variable and the function
+    x = sp.symbols('x')
+    function = x**(-2/3) * sp.exp(-x)
+    # Compute the integral from the given lower bound to infinity
+    integral_value = sp.integrate(function, (x, lower_bound, sp.oo))
+    return float(integral_value.evalf())
+ 
+# Take input from the user for the lower bound
+#lower_bound = 0.1149464
+lower_bound = vol_frac*8
+# Compute and print the integral
+result = compute_integral(lower_bound)
+
+interfacial_energy = [result, result, result]
+
+print(interfacial_energy)
+
+"""
+
 
 def radius(t,r1):
-    term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
+    term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility[0]* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
     term2 = 9*R*T[0]
     numerator = term1/term2
-    
     term3 = 3*(r1**2)
     
     term4 = (8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*t)/(9*R*T[0])
-    term5 = solubility
-    term6 = (2*interfacial_energy[0]*1.182e-29*np.exp((2*interfacial_energy[0]*1.182e-29)/(k_b*T[0]*r1)) )/(k_b*T[0]*(r1**2))
+
+    term5 = solubility[0]
+    term6 = (2*interfacial_energy[0]*1.182e-29*np.exp((2*interfacial_energy[0]*1.182e-29)/(k_b*T[0]*r1)) )/((r1**2))
     
     denominator = term3+term4*term5*term6
-    
     return numerator/denominator
 
 # Initial condition
-y0 = [0.128e-9]
+y0 = [1.87e-9]
 
 # Time span (start and end times)
 t_span = (0, 30*60)
@@ -67,20 +99,16 @@ t1 = np.linspace(0,30*60,100000)
 
 
 
-
-
-solubility = 1514
-
 def radius2(t,r2):
-    term1 = 8*interfacial_energy[1]*(mol_vol_cu**2)*diffusion_coefficient[1]*solubility* np.exp(  (2*interfacial_energy[1]* 1.182e-29) /  (r2*k_b*T[1])  )   
+    term1 = 8*interfacial_energy[1]*(mol_vol_cu**2)*diffusion_coefficient[1]*solubility[1]* np.exp(  (2*interfacial_energy[1]* 1.182e-29) /  (r2*k_b*T[1])  )   
     term2 = 9*R*T[1]
     numerator = term1/term2
     
     term3 = 3*(r2**2)
     
     term4 = (8*interfacial_energy[1]*(mol_vol_cu**2)*diffusion_coefficient[1]*t)/(9*R*T[1])
-    term5 = solubility
-    term6 = (2*interfacial_energy[1]*1.182e-29*np.exp((2*interfacial_energy[1]*1.182e-29)/(k_b*T[1]*r2)) )/(k_b*T[1]*(r2**2))
+    term5 = solubility[1]
+    term6 = (2*interfacial_energy[1]*1.182e-29*np.exp((2*interfacial_energy[1]*1.182e-29)/(k_b*T[1]*r2)) )/((r2**2))
     
     denominator = term3+term4*term5*term6
     
@@ -104,19 +132,16 @@ t2 = np.linspace(30*60,60*60,100000)
 
 
 
-
-solubility = 1514
-
 def radius3(t,r3):
-    term1 = 8*interfacial_energy[2]*(mol_vol_cu**2)*diffusion_coefficient[2]*solubility* np.exp(  (2*interfacial_energy[2]* 1.182e-29) /  (r3*k_b*T[2])  )   
+    term1 = 8*interfacial_energy[2]*(mol_vol_cu**2)*diffusion_coefficient[2]*solubility[2]* np.exp(  (2*interfacial_energy[2]* 1.182e-29) /  (r3*k_b*T[2])  )   
     term2 = 9*R*T[2]
     numerator = term1/term2
     
     term3 = 3*(r3**2)
     
     term4 = (8*interfacial_energy[2]*(mol_vol_cu**2)*diffusion_coefficient[2]*t)/(9*R*T[2])
-    term5 = solubility
-    term6 = (2*interfacial_energy[2]*1.182e-29*np.exp((2*interfacial_energy[2]*1.182e-29)/(k_b*T[2]*r3)) )/(k_b*T[2]*(r3**2))
+    term5 = solubility[2]
+    term6 = (2*interfacial_energy[2]*1.182e-29*np.exp((2*interfacial_energy[2]*1.182e-29)/(k_b*T[2]*r3)) )/((r3**2))
     
     denominator = term3+term4*term5*term6
     
@@ -156,8 +181,9 @@ OROWAN MODEL
 - Fitted the inputs to match the target value of 78MPa for tensile strength
 - Target: 78MPa
 """
+
+r3 = [0, 10e-9]
 #vol_frac = 9.11e-3
-vol_frac = 0.012293
 #shear stress orowan:
 J = 0.8 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
 G = 48300e6
@@ -179,7 +205,6 @@ ASHBY-OROWAN MODEL
 """
 
 #vol_frac = 9.11e-3
-vol_frac = 0.012293
 #shear stress orowan:
 J = 0.8 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
 G = 48300e6
@@ -207,7 +232,6 @@ JACKSON-REED MODEL
 """
 
 #vol_frac = 9.11e-3
-vol_frac = 0.012293
 #shear stress orowan:
 J = 0.8 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
 G = 48300e6
@@ -225,7 +249,7 @@ Russel-Brown Model
 - Target: 15MPa
 """
 
-vol_frac = 0.012293
+
 G = 48300e6
 b = 0.255e-9
 L = (1.77*r3[-1])/(np.sqrt(vol_frac))
@@ -235,7 +259,7 @@ print("Russel-Brown", gain_yield_strength_Russel_Brown)
 
 
 
-#plotting bar chart
+#plotting bar chart 
 categories = ['Orowan', 'Ashby-Orowan', 'Jackson-Reed', 'Russel-Brown']
 values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_tensile_strength_Jackson_Reed, gain_yield_strength_Russel_Brown]
 values2 = [78, 78, 78, 15]
@@ -249,7 +273,7 @@ r2 = [x + 0.25 for x in r1]
 
 # Create bar chart
 plt.bar(r1, values1, color='blue', width=0.25, edgecolor='grey', label='Model')
-plt.bar(r2, values2, color='green', width=0.25, edgecolor='grey', label='Target')
+plt.bar(r2, values2, color='green', width=0.25, edgecolor='grey', label='Experiment')
 
 # Add labels
 plt.xlabel('Categories')
