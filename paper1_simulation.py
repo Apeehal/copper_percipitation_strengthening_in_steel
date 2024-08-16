@@ -39,7 +39,6 @@ print(vol_frac)
 solubility = []
 for i in T:
     x = 10 ** ((6111850/(i**2)) - (16478.2/i) + 10.3242)
-    y = ((x)/mol_mass_cu)/(100/mol_mass_fe)
     solubility.append(x)
 print('array',solubility)
 
@@ -83,7 +82,7 @@ def radius(t,r1):
     return numerator/denominator
 
 # Initial condition
-y0 = [1.87e-9]
+y0 = [0.128e-9]
 
 # Time span (start and end times)
 t_span = (0, 30*60)

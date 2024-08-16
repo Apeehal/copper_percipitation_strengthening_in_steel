@@ -31,24 +31,37 @@ k_b = 1.380649e-23
 wt_cu = 1.18 / 100
 fe_density = 7800
 mol_mass_cu = 63.546 * 1e-3
+mol_mass_fe = 55.85e-3
 cu_density = 8940
 mol_vol_cu = mol_mass_cu / cu_density
 mol_vol_fe = 7.09e-6
 
+vol_fe = 100/fe_density
+vol_cu = (wt_cu*100)/cu_density
+
+#vol_frac = 0.012293
+vol_frac = vol_cu/vol_fe
+print(vol_frac)
+
+
+solubility = []
+for i in T:
+    x = 10 ** ((6111850/(i**2)) - (16478.2/i) + 10.3242)
+    solubility.append(x)
+print('array',solubility)
 
 
 
-solubility = 1514
 
 def radius(t,r1):
-    term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
+    term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility[0]* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
     term2 = 9*R*T[0]
     numerator = term1/term2
     
     term3 = 3*(r1**2)
     
     term4 = (8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*t)/(9*R*T[0])
-    term5 = solubility
+    term5 = solubility[0]
     term6 = (2*interfacial_energy[0]*1.182e-29*np.exp((2*interfacial_energy[0]*1.182e-29)/(k_b*T[0]*r1)) )/(k_b*T[0]*(r1**2))
     
     denominator = term3+term4*term5*term6
@@ -86,6 +99,7 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
+print("final radius", r1[-1])
 
 vol_frac = (wt_cu/cu_density)/(100/fe_density) *100
 Ls = r1[-1]*(np.sqrt(((2*pi)/(3*vol_frac))))
@@ -177,7 +191,7 @@ print("Russel-Brown", gain_tensile_strength_Russel_Brown)
 
 #plotting bar chart
 categories = ['Orowan', 'Ashby-Orowan', 'Jackson-Reed', 'Russel-Brown']
-values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_tensile_strength_Jackson_Reed, gain_yield_strength_Russel_Brown]
+values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_tensile_strength_Jackson_Reed, gain_tensile_strength_Russel_Brown]
 values2 = [365.8, 365.8, 365.8, 186.3]
 
 # Number of categories
