@@ -65,8 +65,8 @@ interfacial_energy = [result, result, result]
 print(interfacial_energy)
 
 """
-
-
+#initial_size = (10)*(0.128e-9)
+initial_size = 10e-9
 def radius(t,r1):
     term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility[0]* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
     term2 = 9*R*T[0]
@@ -82,7 +82,7 @@ def radius(t,r1):
     return numerator/denominator
 
 # Initial condition
-y0 = [0.128e-9]
+y0 = [initial_size]
 
 # Time span (start and end times)
 t_span = (0, 30*60)
@@ -161,6 +161,8 @@ sol3 = solve_ivp(radius3, t_span, y0, method='RK45', t_eval=t_eval)
 r3 = sol3.y[0]
 t3 = np.linspace(60*60,90*60,100000)
 
+print("final size", r3[-1])
+print("change size", (r3[-1]-initial_size))
 
 plt.figure(figsize=(10, 6))
 plt.plot(t1, r1 * 1e9, label='T = {} K'.format(T[0]))
@@ -173,6 +175,9 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+
+
 
 """
 OROWAN MODEL 
