@@ -15,12 +15,13 @@ from scipy.integrate import solve_ivp
 
 R = 8.314  # Gas constant in J/(mol*K)
 pi = np.pi
-interfacial_energy = [0.61, 0.556, 0.52]
+interfacial_energy = [0.628, 0.556, 0.46]
 diffusion_coefficient = [2.6e-16, 4e-18, 2e-21]
 T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
+A_0 = 6.022e23
 
 k_b = 1.380649e-23
-wt_cu = 1.04 / 100
+wt_cu = 1.04
 fe_density = 7800
 mol_mass_cu = 63.546 * 1e-3
 mol_mass_fe = 55.85e-3
@@ -29,44 +30,21 @@ mol_vol_cu = mol_mass_cu / cu_density
 mol_vol_fe = 7.09e-6
 
 vol_fe = 100/fe_density
-vol_cu = (wt_cu*100)/cu_density
+vol_cu = (wt_cu/100)/cu_density
+#vol_frac = vol_cu/vol_fe
 
 #vol_frac = 0.012293
-vol_frac = vol_cu/vol_fe
-print(vol_frac)
+vol_frac = (wt_cu/cu_density)/((1.04/cu_density)+(98.96/fe_density))
+print("vol_frac",vol_frac)
 
 
 solubility = []
 for i in T:
-    x = 10 ** ((6111850/(i**2)) - (16478.2/i) + 10.3242)
+    x = 10 ** ((6111850/((i)**2)) - ((16478.2/i)) + 10.3242)
     solubility.append(x)
-print('array',solubility)
+print("solubility", solubility)
 
 
-"""""
-import sympy as sp
- 
-def compute_integral(lower_bound):
-    # Define the variable and the function
-    x = sp.symbols('x')
-    function = x**(-2/3) * sp.exp(-x)
-    # Compute the integral from the given lower bound to infinity
-    integral_value = sp.integrate(function, (x, lower_bound, sp.oo))
-    return float(integral_value.evalf())
- 
-# Take input from the user for the lower bound
-#lower_bound = 0.1149464
-lower_bound = vol_frac*8
-# Compute and print the integral
-result = compute_integral(lower_bound)
-
-interfacial_energy = [result, result, result]
-
-print(interfacial_energy)
-
-"""
-#initial_size = (10)*(0.128e-9)
-#initial_size = 0.991147e-9
 initial_size = (2*interfacial_energy[0])/((R*T[0])/(mol_vol_cu))
 
 print("initial_size", initial_size)
@@ -180,8 +158,16 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+#r3 = [0,10e-9]
 
+"""
+Consistent Parameters
+"""
 
+J = 0.8 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
+G = 48300e6
+b = 0.255e-9
+nu = 0.25 #can again be used as a fiting parameter (between 0.25 and 0.33)
 
 """
 OROWAN MODEL 
@@ -190,13 +176,9 @@ OROWAN MODEL
 - Target: 78MPa
 """
 
-r3 = [0, 10e-9]
+
 #vol_frac = 9.11e-3
 #shear stress orowan:
-J = 0.8 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
-G = 48300e6
-b = 0.255e-9
-nu = 0.25 #can again be used as a fiting parameter (between 0.25 and 0.33)
 Ls = r3[-1]*(np.sqrt(((2*pi)/(3*vol_frac))))
 
 gain_tensile_strength_orowan = (((G*b)/Ls) * J * 2)*10**-6
@@ -214,10 +196,7 @@ ASHBY-OROWAN MODEL
 
 #vol_frac = 9.11e-3
 #shear stress orowan:
-J = 0.8 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
-G = 48300e6
-b = 0.255e-9
-nu = 0.25 #can again be used as a fiting parameter (between 0.25 and 0.33)
+
 Ls = r3[-1]*(np.sqrt(((2*pi)/(3*vol_frac))))
 rs = r3[-1]
 ri = 4*b #meant to be between b and 4b 
@@ -241,9 +220,6 @@ JACKSON-REED MODEL
 
 #vol_frac = 9.11e-3
 #shear stress orowan:
-J = 0.8 #assume 0.8 for now (can be used as a fitting parameter, meant to be betwee 0.8 and 1)
-G = 48300e6
-b = 0.255e-9
 M = 2
 gain_tensile_strength_Jackson_Reed = (((M*G*b)/(r3[-1]))*np.sqrt((1.5*vol_frac)) * ((J)/(pi**(3/2))) * np.sqrt(((2*pi*interfacial_energy[2]*r3[-1])/(J*G*b*b))-1))*10**-6
 print("Jackson-Reed", gain_tensile_strength_Jackson_Reed)
@@ -258,8 +234,6 @@ Russel-Brown Model
 """
 
 
-G = 48300e6
-b = 0.255e-9
 L = (1.77*r3[-1])/(np.sqrt(vol_frac))
 
 gain_yield_strength_Russel_Brown = ((0.8*G*b)/(L))*(np.sqrt(1-(0.6**2)))*10**-6
@@ -297,3 +271,14 @@ plt.legend()
 # Show the plot
 plt.show()
 
+
+#Simulating Nuclation with Classical Nucleation Theory
+
+
+#c = (1.04/mol_mass_cu)/(100/mol_mass_fe)
+#V = (4/3)*((0.126e-9)**3)*(pi)
+#a = 3.614e-10
+#N = ((1.04/mol_mass_cu)*A_0)/(100/fe_density)
+#J = N*((V*2*((interfacial_energy[0])**2)*(c*diffusion_coefficient[0])) / ((a)**4)*(np.sqrt(((interfacial_energy[0])**3))*(k_b*T[0]))) * np.exp( (8*pi*(a**4)*((initial_size)**4))/(3*(V**2)*diffusion_coefficient[0]*c*t_eval) )
+
+#J = ((N*V*2*(interfacial_energy[0]**2)*c*diffusion_coefficient[0])/((a**4)*np.sqrt((interfacial_energy[0]**3)*k_b*T[0])))*np.exp((8*pi*(a**4)*(initial_size**4))/(3*(V**2)*diffusion_coefficient[0]*c*t_eval))"""""

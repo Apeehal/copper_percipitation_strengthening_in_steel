@@ -20,9 +20,10 @@ from scipy.integrate import solve_ivp
 
 R = 8.314  # Gas constant in J/(mol*K)
 pi = np.pi
-interfacial_energy = [0.52]
+#interfacial_energy = [0.52]
 diffusion_coefficient = [2e-21]
 T = [500 + 273.15]  # in K
+interfacial_energy = [0.46]
 
 #a = 348.79e-9
 
@@ -47,11 +48,15 @@ print(vol_frac)
 solubility = []
 for i in T:
     x = 10 ** ((6111850/(i**2)) - (16478.2/i) + 10.3242)
+    y = (1.04/mol_mass_cu)/(100/mol_mass_fe)
     solubility.append(x)
 print('array',solubility)
 
 
 
+initial_size = (2*interfacial_energy[0])/((R*T[0])/(mol_vol_cu))
+
+print("initial size", initial_size)
 
 def radius(t,r1):
     term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility[0]* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
@@ -69,7 +74,7 @@ def radius(t,r1):
     return numerator/denominator
 
 # Initial condition
-y0 = [0.128e-9]
+y0 = [initial_size]
 
 # Time span (start and end times)
 t_span = (0, 8*60*60)

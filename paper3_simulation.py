@@ -36,12 +36,14 @@ h = 1
 #a = 348.79e-9
 
 
-interfacial_energy = [0.39]
+interfacial_energy = [0.43]
 diffusion_coefficient = [2e-21]
 T = [450 + 273.15]  # in K
 solubility_wt = 0.1
 solubility = (solubility_wt/mol_mass_cu)/(100/fe_density)
 
+initial_size = (2*interfacial_energy[0])/((R*T[0])/(mol_vol_cu))
+print("initial size", initial_size)
 
 def radius(t,r1):
     term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
