@@ -9,11 +9,6 @@ Jackson-Reed
 Russel-Brown
 """
 
-"""
-Assuming precipitates grow from r = 0.128nm when aged at 550deg C
-For now assuming Ostwald Ripening, perhaps we need to model the nucleation & growth stages as well. 
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
