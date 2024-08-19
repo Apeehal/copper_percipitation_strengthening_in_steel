@@ -66,7 +66,11 @@ print(interfacial_energy)
 
 """
 #initial_size = (10)*(0.128e-9)
-initial_size = 10e-9
+#initial_size = 0.991147e-9
+initial_size = (2*interfacial_energy[0])/((R*T[0])/(mol_vol_cu))
+
+print("initial_size", initial_size)
+
 def radius(t,r1):
     term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility[0]* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
     term2 = 9*R*T[0]
