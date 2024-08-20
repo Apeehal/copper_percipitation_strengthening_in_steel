@@ -135,7 +135,7 @@ b = 0.255e-9
 OROWAN MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S0927025614002572
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 44MPa
+- Target: 25MPa
 """
 
 #shear stress orowan:
@@ -151,7 +151,7 @@ print("Orowan", gain_tensile_strength_orowan)
 ASHBY-OROWAN MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S0927025614002572
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 44MPa
+- Target: 25MPa
 - Assumed Tensile Strength = M * Shear Strength (generally true, but the Taylor Factor for polycrystalline materials is 3)
 """
 
@@ -170,7 +170,7 @@ print("Ashby-Orowan", gain_tensile_strength_Ashby_Orowan)
 JACKSON-REED MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S2589152920300995
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 44MPa
+- Target: 25MPa
 - Assumed Tensile Strength = M * Shear Strength (generally true, but the Taylor Factor for polycrystalline materials is 3)
 
 
@@ -183,7 +183,7 @@ print("Jackson-Reed", gain_tensile_strength_Jackson_Reed)
 Russel-Brown Model 
 - Source: https://www.mdpi.com/2075-4701/10/10/1350
 - For Yield Stress
-- Target: 36MPa
+- Target: 16MPa
 """
 
 Lx = (1.77*r1[-1])/(np.sqrt(vol_frac))
@@ -200,7 +200,7 @@ print("Russel-Brown", gain_yield_strength_Russel_Brown)
 #plotting bar chart
 categories = ['Orowan', 'Ashby-Orowan', 'Jackson-Reed', 'Russel-Brown',]
 values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_tensile_strength_Jackson_Reed, gain_yield_strength_Russel_Brown]
-values2 = [57, 57, 57, 36]
+values2 = [25, 25, 25, 16]
 
 # Number of categories
 n = len(categories)
