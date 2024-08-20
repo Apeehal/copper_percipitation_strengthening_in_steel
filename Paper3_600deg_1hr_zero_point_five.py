@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 20 12:39:50 2024
+Created on Tue Aug 20 13:12:19 2024
 
 @author: appee
 """
+
 
 """
 Attempting to model the change in radius of copper precipitates in 42CrMo4 Quench and Tempering Steel from the following paper:
@@ -22,7 +23,6 @@ from scipy.integrate import solve_ivp
 
 
 """
-0.57% Cu @ 450 deg C
 """
 
 h = 1
@@ -30,7 +30,7 @@ R = 8.314
 pi = np.pi
 A_0 = 6.022e23
 k_b = 1.380649e-23
-wt_cu = 1
+wt_cu = 0.5
 fe_density = 7800
 mol_mass_cu = 63.546 * 1e-3
 mol_mass_fe = 55.85e-3
@@ -50,24 +50,25 @@ print("vol_frac",vol_frac)
 
 #interfacial_energy = [0.43]
 #diffusion_coefficient = [2e-21]
-T = [450 + 273.15]  # in K
+T = [600 + 273.15]  # in K
 interfacial_energy = [((3/5)*T[0]-3.8899)*(10**-3)]
 
 
 B = 0.034343885822
 A = 34242.66544
 diffusion_coefficient = [B*np.exp((-A)/(T[0]))]
+#diffusion_coefficient = [2e-21]
 print("diffusion", diffusion_coefficient)
-
 
 solubility = []
 for i in T:
     x = 10 ** ((6111850/((i)**2)) - ((16478.2/i)) + 10.3242)
     solubility.append(x)
 print("solubility", solubility)
-
 initial_size = (2*interfacial_energy[0])/((R*T[0])/(mol_vol_cu))
 print("initial size", initial_size)
+
+
 
 def radius(t,r1):
     term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility[0]* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
@@ -117,6 +118,8 @@ plt.show()
 
 
 
+#r1 = [0,20*10**-9]
+
 
 nu = 0.25 #can again be used as a fiting parameter (between 0.25 and 0.33)
 vol_frac = (wt_cu/cu_density)/(100/fe_density)
@@ -132,7 +135,7 @@ b = 0.255e-9
 OROWAN MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S0927025614002572
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 47MPa
+- Target: 25MPa
 """
 
 #shear stress orowan:
@@ -148,7 +151,7 @@ print("Orowan", gain_tensile_strength_orowan)
 ASHBY-OROWAN MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S0927025614002572
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 47MPa
+- Target: 25MPa
 - Assumed Tensile Strength = M * Shear Strength (generally true, but the Taylor Factor for polycrystalline materials is 3)
 """
 
@@ -167,7 +170,7 @@ print("Ashby-Orowan", gain_tensile_strength_Ashby_Orowan)
 JACKSON-REED MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S2589152920300995
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 365.8MPa
+- Target: 25MPa
 - Assumed Tensile Strength = M * Shear Strength (generally true, but the Taylor Factor for polycrystalline materials is 3)
 
 
@@ -197,7 +200,7 @@ print("Russel-Brown", gain_yield_strength_Russel_Brown)
 #plotting bar chart
 categories = ['Orowan', 'Ashby-Orowan', 'Jackson-Reed', 'Russel-Brown',]
 values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_tensile_strength_Jackson_Reed, gain_yield_strength_Russel_Brown]
-values2 = [88, 88, 88, 48]
+values2 = [25, 25, 25, 16]
 
 # Number of categories
 n = len(categories)

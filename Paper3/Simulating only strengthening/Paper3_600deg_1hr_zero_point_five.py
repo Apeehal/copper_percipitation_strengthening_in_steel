@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 20 12:39:50 2024
+Created on Tue Aug 20 13:12:19 2024
 
 @author: appee
 """
+
 
 """
 Attempting to model the change in radius of copper precipitates in 42CrMo4 Quench and Tempering Steel from the following paper:
@@ -20,17 +21,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
-
-"""
-0.57% Cu @ 450 deg C
-"""
+r1 = [16e-9]
 
 h = 1
 R = 8.314  
 pi = np.pi
 A_0 = 6.022e23
 k_b = 1.380649e-23
-wt_cu = 1
+wt_cu = 0.5
 fe_density = 7800
 mol_mass_cu = 63.546 * 1e-3
 mol_mass_fe = 55.85e-3
@@ -50,72 +48,26 @@ print("vol_frac",vol_frac)
 
 #interfacial_energy = [0.43]
 #diffusion_coefficient = [2e-21]
-T = [450 + 273.15]  # in K
+T = [600 + 273.15]  # in K
 interfacial_energy = [((3/5)*T[0]-3.8899)*(10**-3)]
 
 
 B = 0.034343885822
 A = 34242.66544
 diffusion_coefficient = [B*np.exp((-A)/(T[0]))]
+#diffusion_coefficient = [2e-21]
 print("diffusion", diffusion_coefficient)
-
 
 solubility = []
 for i in T:
     x = 10 ** ((6111850/((i)**2)) - ((16478.2/i)) + 10.3242)
     solubility.append(x)
 print("solubility", solubility)
-
 initial_size = (2*interfacial_energy[0])/((R*T[0])/(mol_vol_cu))
 print("initial size", initial_size)
 
-def radius(t,r1):
-    term1 = 8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*solubility[0]* np.exp(  (2*interfacial_energy[0]* 1.182e-29) /  (r1*k_b*T[0])  )   
-    term2 = 9*R*T[0]
-    numerator = term1/term2
-    
-    term3 = 3*(r1**2)
-    
-    term4 = (8*interfacial_energy[0]*(mol_vol_cu**2)*diffusion_coefficient[0]*t)/(9*R*T[0])
-    term5 = solubility[0]
-    term6 = (2*interfacial_energy[0]*1.182e-29*np.exp((2*interfacial_energy[0]*1.182e-29)/(k_b*T[0]*r1)) )/(k_b*T[0]*(r1**2))
-    
-    denominator = term3+term4*term5*term6
-    
-    return numerator/denominator
 
-# Initial condition
-y0 = [initial_size]
-
-# Time span (start and end times)
-t_span = (0, h*60*60)
-
-# Time points where solution is to be computed
-t_eval = np.linspace(t_span[0], t_span[1], 100000)
-
-# Solve the IVP using solve_ivp with the 'RK45' method
-sol1 = solve_ivp(radius, t_span, y0, method='RK45', t_eval=t_eval)
-
-r1 = sol1.y[0]
-t1 = np.linspace(0, h*60*60,100000)
-
-
-"""
-No precipitate size given
-"""
-
-print("final size", r1[-1])
-
-# Plotting the graph
-plt.plot(t1, r1, label='Sample A Radius')
-plt.xlabel('Time (seconds)')
-plt.ylabel('r value')
-plt.title('Plot of r vs t')
-plt.legend()
-plt.grid(True)
-plt.show()
-
-
+#r1 = [0,20*10**-9]
 
 
 nu = 0.25 #can again be used as a fiting parameter (between 0.25 and 0.33)
@@ -132,7 +84,7 @@ b = 0.255e-9
 OROWAN MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S0927025614002572
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 47MPa
+- Target: 44MPa
 """
 
 #shear stress orowan:
@@ -148,7 +100,7 @@ print("Orowan", gain_tensile_strength_orowan)
 ASHBY-OROWAN MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S0927025614002572
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 47MPa
+- Target: 44MPa
 - Assumed Tensile Strength = M * Shear Strength (generally true, but the Taylor Factor for polycrystalline materials is 3)
 """
 
@@ -167,7 +119,7 @@ print("Ashby-Orowan", gain_tensile_strength_Ashby_Orowan)
 JACKSON-REED MODEL 
 - Source: https://www.sciencedirect.com/science/article/pii/S2589152920300995
 - Fitted the inputs to match the target value of 78MPa for tensile strength
-- Target: 365.8MPa
+- Target: 44MPa
 - Assumed Tensile Strength = M * Shear Strength (generally true, but the Taylor Factor for polycrystalline materials is 3)
 
 
@@ -180,7 +132,7 @@ print("Jackson-Reed", gain_tensile_strength_Jackson_Reed)
 Russel-Brown Model 
 - Source: https://www.mdpi.com/2075-4701/10/10/1350
 - For Yield Stress
-- Target: 16MPa
+- Target: 36MPa
 """
 
 Lx = (1.77*r1[-1])/(np.sqrt(vol_frac))
@@ -197,7 +149,7 @@ print("Russel-Brown", gain_yield_strength_Russel_Brown)
 #plotting bar chart
 categories = ['Orowan', 'Ashby-Orowan', 'Jackson-Reed', 'Russel-Brown',]
 values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_tensile_strength_Jackson_Reed, gain_yield_strength_Russel_Brown]
-values2 = [88, 88, 88, 48]
+values2 = [57, 57, 57, 36]
 
 # Number of categories
 n = len(categories)
