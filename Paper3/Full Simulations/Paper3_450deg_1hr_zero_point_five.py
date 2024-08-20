@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug 20 12:28:18 2024
+
+@author: appee
+"""
+
 """
 Attempting to model the change in radius of copper precipitates in 42CrMo4 Quench and Tempering Steel from the following paper:
 https://onlinelibrary.wiley.com/doi/full/10.1002/srin.202200623
@@ -36,7 +43,7 @@ vol_cu = (wt_cu/100)/cu_density
 #vol_frac = vol_cu/vol_fe
 
 #vol_frac = 0.012293
-vol_frac = (wt_cu/cu_density)/((wt_cu/cu_density)+((1-wt_cu)/fe_density))
+vol_frac = (wt_cu/cu_density)/((wt_cu/cu_density)+((100-wt_cu)/fe_density))
 print("vol_frac",vol_frac)
 
 
@@ -77,7 +84,7 @@ def radius(t,r1):
     return numerator/denominator
 
 # Initial condition
-y0 = [0.128e-9]
+y0 = [initial_size]
 
 # Time span (start and end times)
 t_span = (0, h*60*60)
@@ -96,7 +103,7 @@ t1 = np.linspace(0, h*60*60,100000)
 No precipitate size given
 """
 
-
+print("final size", r1[-1])
 
 # Plotting the graph
 plt.plot(t1, r1, label='Sample A Radius')
@@ -163,13 +170,12 @@ JACKSON-REED MODEL
 - Assumed Tensile Strength = M * Shear Strength (generally true, but the Taylor Factor for polycrystalline materials is 3)
 
 
-
+"""
+M = 2
 gain_tensile_strength_Jackson_Reed = (((M*G*b)/(r1[-1]))*np.sqrt((1.5*vol_frac)) * ((J)/(pi**(3/2))) * np.sqrt(((2*pi*interfacial_energy[0]*r1[-1])/(J*G*b*b))-1))*10**-6
 print("Jackson-Reed", gain_tensile_strength_Jackson_Reed)
 
-
-
-
+"""
 Russel-Brown Model 
 - Source: https://www.mdpi.com/2075-4701/10/10/1350
 - For Yield Stress
@@ -188,9 +194,9 @@ print("Russel-Brown", gain_yield_strength_Russel_Brown)
 
 
 #plotting bar chart
-categories = ['Orowan', 'Ashby-Orowan', 'Russel-Brown']
-values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_yield_strength_Russel_Brown]
-values2 = [47, 47, 16]
+categories = ['Orowan', 'Ashby-Orowan', 'Jackson-Reed', 'Russel-Brown',]
+values1 = [gain_tensile_strength_orowan,gain_tensile_strength_Ashby_Orowan, gain_tensile_strength_Jackson_Reed, gain_yield_strength_Russel_Brown]
+values2 = [47, 47, 47, 16]
 
 # Number of categories
 n = len(categories)
