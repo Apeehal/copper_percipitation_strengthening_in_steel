@@ -21,7 +21,7 @@ T = [780 + 273.15, 660 + 273.15, 500 + 273.15]  # in K
 A_0 = 6.022e23
 
 k_b = 1.380649e-23
-wt_cu = 1.04/100
+wt_cu = 1.04
 fe_density = 7800
 mol_mass_cu = 63.546 * 1e-3
 mol_mass_fe = 55.85e-3
@@ -41,7 +41,8 @@ print("vol_frac",vol_frac)
 solubility = []
 for i in T:
     x = 10 ** ((6111850/((i)**2)) - ((16478.2/i)) + 10.3242)
-    solubility.append(x)
+    y = x
+    solubility.append(y)
 print("solubility", solubility)
 
 
@@ -255,12 +256,12 @@ r2 = [x + 0.25 for x in r1]
 
 # Create bar chart
 plt.bar(r1, values1, color='blue', width=0.25, edgecolor='grey', label='Model')
-plt.bar(r2, values2, color='green', width=0.25, edgecolor='grey', label='Experiment')
+plt.bar(r2, values2, color='green', width=0.25, edgecolor='grey', label='Literature')
 
 # Add labels
 plt.xlabel('Categories')
-plt.ylabel('Values')
-plt.title('Side-by-Side Bar Chart')
+plt.ylabel('Gain in strength (MPa)')
+plt.title('Strengthening Model vs. Literature')
 
 # Add xticks on the middle of the bars
 plt.xticks([r + 0.125 for r in range(n)], categories)
